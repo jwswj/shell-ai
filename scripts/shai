@@ -1,0 +1,8 @@
+#!/bin/sh
+# Shell-AI wrapper script
+
+# Get the directory of this script
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+# Run the shell-ai binary
+"$SCRIPT_DIR/../bin/shai" "$@" 

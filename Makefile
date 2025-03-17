@@ -1,12 +1,21 @@
-all: clean build publish
+.PHONY: build install clean test
 
+# Build the binary
 build:
-	python setup.py sdist bdist_wheel
+	go build -o bin/shai ./cmd/shai
 
+# Install the binary
+install:
+	go install ./cmd/shai
+
+# Clean build artifacts
 clean:
-	rm -rf build dist my_project.egg-info
+	rm -rf bin/
 
-publish: build
-	twine upload dist/*
+# Run tests
+test:
+	go test -v ./...
 
-.PHONY: build clean publish all
+# Get dependencies
+deps:
+	go mod tidy

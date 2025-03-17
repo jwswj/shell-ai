@@ -1,96 +1,120 @@
 # Shell-AI: let AI write your shell commands
 
-[![PyPI version](https://badge.fury.io/py/shell-ai.svg)](https://pypi.org/project/shell-ai/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Forks](https://img.shields.io/github/forks/ricklamers/shell-ai)](https://github.com/ricklamers/shell-ai/network)
-[![Stars](https://img.shields.io/github/stars/ricklamers/shell-ai)](https://github.com/ricklamers/shell-ai/stargazers)
 
+Shell-AI (`shai`) is a CLI utility that brings the power of natural language understanding to your command line. Simply input what you want to do in natural language, and `shai` will suggest single-line commands that achieve your intent.
 
-Shell-AI (`shai`) is a CLI utility that brings the power of natural language understanding to your command line. Simply input what you want to do in natural language, and `shai` will suggest single-line commands that achieve your intent. Under the hood, Shell-AI leverages the [LangChain](https://github.com/langchain-ai/langchain) for LLM use and builds on the excellent [InquirerPy](https://github.com/kazhala/InquirerPy) for the interactive CLI.
+## Features
 
-![demo-shell-ai](https://github.com/ricklamers/shell-ai/assets/1309307/b4057165-5c23-46d4-b68e-00915b738dc3)
+- Generate shell commands from natural language descriptions
+- Multiple command suggestions to choose from
+- Support for OpenAI, Azure OpenAI, and Groq LLM providers
+- Context mode to maintain command history and output for better suggestions
+- Shell history integration
+- Configurable via environment variables or config file
 
 ## Installation
 
-You can install Shell-AI directly from PyPI using pip:
+### Using Go Install (Recommended)
+
+The easiest way to install Shell-AI is using Go's built-in install command:
 
 ```bash
-pip install shell-ai
+go install github.com/jwswj/shell-ai/cmd/shai@latest
 ```
 
-Note that on Linux, Python 3.10 or later is required.
+This will install the `shai` binary to your `$GOPATH/bin` directory, which should be in your PATH.
 
-After installation, you can invoke the utility using the `shai` command.
+You can then run it using:
+
+```bash
+shai find all files modified in the last 24 hours
+```
+
+### From Source
+
+Alternatively, you can build from source:
+
+```bash
+git clone https://github.com/jwswj/shell-ai.git
+cd shell-ai
+make build
+```
+
+Then run the binary directly:
+
+```bash
+./bin/shai find all files modified in the last 24 hours
+```
+
+Or install it using:
+
+```bash
+make install
+```
+
+## Configuration
+
+Shell-AI can be configured using environment variables or a config file.
+
+### Environment Variables
+
+- `OPENAI_API_KEY`: Your OpenAI API key
+- `GROQ_API_KEY`: Your Groq API key
+- `OPENAI_MODEL`: The OpenAI model to use (default: `gpt-3.5-turbo`)
+- `GROQ_MODEL`: The Groq model to use (default: `llama-3.3-70b-versatile`)
+- `SHAI_API_PROVIDER`: The API provider to use (`openai`, `azure`, or `groq`, default: `groq`)
+- `SHAI_SUGGESTION_COUNT`: The number of suggestions to generate (default: `3`)
+- `SHAI_SKIP_CONFIRM`: Skip confirmation of the command to execute (default: `false`)
+- `SHAI_SKIP_HISTORY`: Skip writing selected command to shell history (default: `false`)
+- `SHAI_TEMPERATURE`: Controls randomness in the output (default: `0.05`)
+- `CTX`: Enable context mode (default: `false`)
+- `DEBUG`: Enable debug mode (default: `false`)
+
+### Azure OpenAI Configuration
+
+If using Azure OpenAI, the following environment variables are required:
+
+- `OPENAI_API_KEY`: Your Azure OpenAI API key
+- `AZURE_DEPLOYMENT_NAME`: Your Azure OpenAI deployment name
+- `AZURE_API_BASE`: Your Azure OpenAI API base URL
+
+### Config File
+
+You can also create a config file at `~/.config/shell-ai/config.json` (Linux/macOS) or `%APPDATA%\shell-ai\config.json` (Windows):
+
+```json
+{
+  "OPENAI_API_KEY": "your-api-key",
+  "OPENAI_MODEL": "gpt-3.5-turbo",
+  "SHAI_SUGGESTION_COUNT": "3",
+  "SHAI_API_PROVIDER": "groq",
+  "GROQ_API_KEY": "your-groq-api-key",
+  "GROQ_MODEL": "llama-3.3-70b-versatile",
+  "SHAI_TEMPERATURE": "0.05"
+}
+```
 
 ## Usage
 
 To use Shell-AI, open your terminal and type:
 
 ```bash
-shai run terraform dry run thingy
+shai find all files modified in the last 24 hours
 ```
 
-Shell-AI will then suggest 3 commands to fulfill your request:
-- `terraform plan`
-- `terraform plan -input=false`
-- `terraform plan`
+Shell-AI will generate several command suggestions, and you can select one to execute.
 
-## Features
+### Context Mode
 
-- **Natural Language Input**: Describe what you want to do in plain English (or other supported languages).
-- **Command Suggestions**: Get single-line command suggestions that accomplish what you asked for.
-- **Cross-Platform**: Works on Linux, macOS, and Windows.
-- **Azure Compatibility**: Shell-AI now supports Azure OpenAI deployments.
+Context mode allows Shell-AI to maintain context between commands, which can be useful for complex tasks:
 
-## Configuration
-
-Shell-AI can be configured through environment variables or a config file located at `~/.config/shell-ai/config.json` (Linux/MacOS) or `%APPDATA%\shell-ai\config.json` (Windows).
-
-### Environment Variables
-
-- `OPENAI_API_KEY`: (Required) Your OpenAI API key
-- `GROQ_API_KEY`: (Required if using Groq) Your Groq API key
-- `OPENAI_MODEL`: The OpenAI model to use (default: "gpt-3.5-turbo")
-- `SHAI_SUGGESTION_COUNT`: Number of suggestions to generate (default: 3)
-- `SHAI_SKIP_CONFIRM`: Skip command confirmation when set to "true"
-- `SHAI_SKIP_HISTORY`: Skip writing to shell history when set to "true"
-- `SHAI_API_PROVIDER`: Choose between "openai", "azure", or "groq" (default: "groq")
-- `SHAI_TEMPERATURE`: Controls randomness in the output (default: 0.05). Lower values (e.g., 0.05) make output more focused and deterministic, while higher values (e.g., 0.7) make it more creative and varied.
-- `CTX`: Enable context mode when set to "true" (Note: outputs will be sent to the API)
-
-### Config File Example
-
-```json
-{
-  "OPENAI_API_KEY": "your_openai_api_key_here",
-  "OPENAI_MODEL": "gpt-3.5-turbo",
-  "SHAI_SUGGESTION_COUNT": "3",
-  "CTX": true
-}
+```bash
+shai --ctx find all log files
 ```
 
-The application will read from this file if it exists, overriding any existing environment variables.
-
-Run the application after setting these configurations.
-
-### Using with Groq
-
-To use Shell AI with Groq:
-
-1. Get your API key from Groq
-2. Set the following environment variables:
-   ```bash
-   export SHAI_API_PROVIDER=groq
-   export GROQ_API_KEY=your_api_key_here
-   export GROQ_MODEL=llama-3.3-70b-versatile
-   ```
-
-## Contributing
-
-This implementation can be made much smarter! Contribute your ideas as Pull Requests and make AI Shell better for everyone.
-
-Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+In context mode, the output of each command is captured and used as context for the next command.
 
 ## License
 
-Shell-AI is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License - see the LICENSE file for details. 

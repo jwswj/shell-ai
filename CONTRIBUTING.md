@@ -1,41 +1,69 @@
 # Contributing to Shell-AI
 
-Thank you for your interest in contributing to Shell-AI! Your contributions will help make this tool more robust and user-friendly. This document outlines the guidelines for contributing to this project.
+Thank you for considering contributing to Shell-AI! This document provides guidelines and instructions for contributing to the project.
 
-## Reporting Issues
+## Development Setup
 
-If you encounter any bugs, issues, or have feature requests, please [open a new issue](https://github.com/ricklamers/shell-ai/issues) on GitHub.
+1. Fork the repository
+2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/shell-ai.git`
+3. Change to the project directory: `cd shell-ai`
+4. Install dependencies: `go mod tidy`
+5. Build the project: `make build`
+6. Run the binary locally: `./bin/shai <prompt>`
 
-## Setting Up the Development Environment
+For development, you can also install the binary directly to your GOPATH:
 
-1. Fork the repository on GitHub.
-2. Clone your fork locally: `git clone https://github.com/ricklamers/shell-ai.git`
-3. Create a virtual environment: `python -m venv env`
-4. Activate the virtual environment: `source env/bin/activate` (Linux/macOS) or `env\Scripts\activate` (Windows)
-5. Install the dependencies: `pip install -r requirements.txt`
+```bash
+go install ./cmd/shai
+```
 
-## Submitting a Pull Request
+## Running Tests
 
-1. Create a new branch: `git checkout -b feature/my-feature` or `git checkout -b fix/my-fix`
-2. Make your changes and commit them: `git commit -m "Add my feature"`
-3. Push the changes to your fork: `git push origin feature/my-feature` or `git push origin fix/my-fix`
-4. [Open a pull request](https://github.com/your-org/shell-ai/pulls) against the `main` branch.
+Run tests with:
+
+```bash
+make test
+```
 
 ## Code Style
 
-Black, ruff, isort
+Please follow the standard Go code style guidelines:
 
-## Testing
+- Format your code with `gofmt` or `go fmt`
+- Use meaningful variable and function names
+- Write comments for non-obvious code
+- Follow the [Effective Go](https://golang.org/doc/effective_go) guidelines
 
-Add pytest unit tests where it makes sense.
+## Pull Request Process
 
-## Review Process
+1. Create a new branch for your feature or bugfix: `git checkout -b feature/your-feature-name`
+2. Make your changes
+3. Run tests to ensure they pass: `make test`
+4. Commit your changes with a descriptive commit message
+5. Push to your fork: `git push origin feature/your-feature-name`
+6. Open a pull request against the main repository
 
-1. A maintainer will review your pull request and provide feedback.
-2. Once approved, your pull request will be merged.
+## Reporting Issues
+
+When reporting issues, please include:
+
+- A clear and descriptive title
+- Steps to reproduce the issue
+- Expected behavior
+- Actual behavior
+- Any relevant logs or error messages
+- Your environment (OS, Go version, etc.)
+
+## Feature Requests
+
+Feature requests are welcome! Please provide:
+
+- A clear and descriptive title
+- A detailed description of the proposed feature
+- Any relevant examples or use cases
 
 ## License
 
-By contributing to Shell-AI, you agree that your contributions will be licensed under the [MIT License](LICENSE.md).
+By contributing to Shell-AI, you agree that your contributions will be licensed under the project's MIT License.
 
 Thank you for contributing to Shell-AI!
