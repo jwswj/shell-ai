@@ -165,7 +165,7 @@ func (c *Client) GenerateShellCommand(userPrompt, context string) (string, error
 
 	// Add context if available
 	if context != "" {
-		systemPrompt += fmt.Sprintf(" Between [], these are the last %d tokens from the previous command's output, you can use them as context: [%s]", 
+		systemPrompt += fmt.Sprintf(" Between [], these are the last %d tokens from the previous command's output, you can use them as context: [%s]",
 			len(context), context)
 	}
 
@@ -199,4 +199,4 @@ func getOSName() string {
 // getOSRelease returns the OS release information
 func getOSRelease() string {
 	return runtime.GOOS
-} 
+}

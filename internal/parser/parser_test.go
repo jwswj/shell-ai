@@ -78,4 +78,4 @@ func TestContextManager(t *testing.T) {
 	if cm.GetContext() != "hello" {
 		t.Errorf("Expected context to be 'hello', got %q", cm.GetContext())
 	}
-} 
+}

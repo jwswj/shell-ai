@@ -82,20 +82,20 @@ func extractJSONFromMarkdown(markdown string) string {
 	// Try to find JSON in code blocks
 	codeBlockRegex := regexp.MustCompile("```(?:json)?\\s*\\n([\\s\\S]*?)\\n```")
 	matches := codeBlockRegex.FindAllStringSubmatch(markdown, -1)
-	
+
 	if len(matches) > 0 {
 		// Return the content of the first code block
 		return strings.TrimSpace(matches[0][1])
 	}
-	
+
 	// If no code blocks found, try to find inline code
 	inlineCodeRegex := regexp.MustCompile("`([^`]*)`")
 	inlineMatches := inlineCodeRegex.FindAllStringSubmatch(markdown, -1)
-	
+
 	if len(inlineMatches) > 0 {
 		// Return the content of the first inline code
 		return strings.TrimSpace(inlineMatches[0][1])
 	}
-	
+
 	return ""
-} 
+}
