@@ -4,6 +4,8 @@
 
 Shell-AI (`shai`) is a CLI utility that brings the power of natural language understanding to your command line. Simply input what you want to do in natural language, and `shai` will suggest single-line commands that achieve your intent.
 
+This is a Go fork of [@ricklamers's original project](https://github.com/ricklamers/shell-ai).
+
 ## Features
 
 - Generate shell commands from natural language descriptions
@@ -85,8 +87,6 @@ You can also create a config file at `~/.config/shell-ai/config.json` (Linux/mac
 
 ```json
 {
-  "OPENAI_API_KEY": "your-api-key",
-  "OPENAI_MODEL": "gpt-3.5-turbo",
   "SHAI_SUGGESTION_COUNT": "3",
   "SHAI_API_PROVIDER": "groq",
   "GROQ_API_KEY": "your-groq-api-key",
@@ -117,4 +117,4 @@ In context mode, the output of each command is captured and used as context for 
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
