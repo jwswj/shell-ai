@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/alecthomas/kong"
 	"github.com/jwswj/shell-ai/internal/config"
@@ -61,6 +62,12 @@ func main() {
 		// Run the suggestions engine
 		err = suggestions.Run(client, cfg, CLI.Prompt)
 		if err != nil {
+			// Check if the error is due to Ctrl+C (interrupt)
+			if err.Error() == "^C" || strings.Contains(err.Error(), "interrupt") {
+				// Just exit cleanly without error message
+				os.Exit(0)
+			}
+
 			fmt.Fprintf(os.Stderr, "Error running suggestions: %v\n", err)
 			os.Exit(1)
 		}

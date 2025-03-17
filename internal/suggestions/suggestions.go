@@ -1,7 +1,6 @@
 package suggestions
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -13,6 +12,7 @@ import (
 	"github.com/jwswj/shell-ai/internal/config"
 	"github.com/jwswj/shell-ai/internal/llm"
 	"github.com/jwswj/shell-ai/internal/parser"
+	"github.com/manifoldco/promptui"
 )
 
 // SystemOption represents a system option in the suggestions menu
@@ -49,66 +49,61 @@ func Run(client *llm.Client, cfg *config.Config, promptArgs []string) error {
 			return err
 		}
 
-		// Add system options
-		options := append(suggestions, string(OptGenSuggestions), string(OptNewCommand), string(OptDismiss))
+		// Add only the Dismiss system option
+		options := append(suggestions, string(OptDismiss))
 
-		// Show prompt
-		fmt.Println("Select a command:")
-		for i, option := range options {
-			fmt.Printf("%d. %s\n", i+1, option)
+		// Create a select prompt with promptui
+		selectPrompt := promptui.Select{
+			Label: "Select a command",
+			Items: options,
+			Size:  10, // Show 10 items at a time
+			Templates: &promptui.SelectTemplates{
+				Active:   "→ {{ if eq . \"Dismiss\" }}{{ . | red }}{{ else }}{{ . | cyan }}{{ end }}",
+				Inactive: "  {{ if eq . \"Dismiss\" }}{{ . | red }}{{ else }}{{ . }}{{ end }}",
+				Selected: "✓ {{ if eq . \"Dismiss\" }}{{ . | red }}{{ else }}{{ . | green }}{{ end }}",
+			},
+			Searcher: func(input string, index int) bool {
+				option := options[index]
+				return strings.Contains(strings.ToLower(option), strings.ToLower(input))
+			},
 		}
 
-		// Get user selection
-		var selection string
-		fmt.Print("Enter selection (1-" + fmt.Sprint(len(options)) + "): ")
-		reader := bufio.NewReader(os.Stdin)
-		input, err := reader.ReadString('\n')
+		_, selection, err := selectPrompt.Run()
 		if err != nil {
+			// Check if the error is due to Ctrl+C (interrupt)
+			if err.Error() == "^C" || strings.Contains(err.Error(), "interrupt") {
+				fmt.Println("\nExiting...")
+				return nil
+			}
 			return err
 		}
-		input = strings.TrimSpace(input)
-
-		// Convert input to index
-		var index int
-		_, err = fmt.Sscanf(input, "%d", &index)
-		if err != nil || index < 1 || index > len(options) {
-			fmt.Println("Invalid selection, please try again.")
-			continue
-		}
-
-		// Get selected option
-		selection = options[index-1]
 
 		// Handle selection
 		switch SystemOption(selection) {
 		case OptDismiss:
 			return nil
-		case OptNewCommand:
-			// Prompt for new command
-			fmt.Print("New command: ")
-			input, err := reader.ReadString('\n')
-			if err != nil {
-				return err
-			}
-			prompt = strings.TrimSpace(input)
-			continue
-		case OptGenSuggestions:
-			continue
 		default:
 			// User selected a command
 			userCommand := selection
 
 			// Confirm command if not skipping confirmation
 			if !cfg.SkipConfirm {
-				fmt.Printf("Confirm [%s]: ", userCommand)
-				input, err := reader.ReadString('\n')
+				confirmPrompt := promptui.Prompt{
+					Label:     fmt.Sprintf("Confirm [%s]", userCommand),
+					Default:   userCommand,
+					AllowEdit: true,
+				}
+
+				confirmedCommand, err := confirmPrompt.Run()
 				if err != nil {
+					// Check if the error is due to Ctrl+C (interrupt)
+					if err.Error() == "^C" || strings.Contains(err.Error(), "interrupt") {
+						fmt.Println("\nExiting...")
+						return nil
+					}
 					return err
 				}
-				input = strings.TrimSpace(input)
-				if input != "" {
-					userCommand = input
-				}
+				userCommand = confirmedCommand
 			}
 
 			// Write to shell history if not skipping history
@@ -166,12 +161,27 @@ func Run(client *llm.Client, cfg *config.Config, promptArgs []string) error {
 				}
 
 				// Prompt for new command
-				fmt.Printf(">>> %s\nNew command: ", getCurrentDir())
-				input, err := reader.ReadString('\n')
+				fmt.Printf(">>> %s\n", getCurrentDir())
+				newCmdPrompt := promptui.Prompt{
+					Label: "New command",
+					Validate: func(input string) error {
+						if strings.TrimSpace(input) == "" {
+							return fmt.Errorf("Command cannot be empty")
+						}
+						return nil
+					},
+				}
+
+				newCmd, err := newCmdPrompt.Run()
 				if err != nil {
+					// Check if the error is due to Ctrl+C (interrupt)
+					if err.Error() == "^C" || strings.Contains(err.Error(), "interrupt") {
+						fmt.Println("\nExiting...")
+						return nil
+					}
 					return err
 				}
-				prompt = strings.TrimSpace(input)
+				prompt = strings.TrimSpace(newCmd)
 			}
 		}
 	}
