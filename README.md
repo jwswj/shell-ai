@@ -10,7 +10,7 @@ This is a Go fork of [@ricklamers's original project](https://github.com/ricklam
 
 - Generate shell commands from natural language descriptions
 - Multiple command suggestions to choose from
-- Support for OpenAI, Azure OpenAI, and Groq LLM providers
+- Support for OpenAI, and Groq LLM providers
 - Context mode to maintain command history and output for better suggestions
 - Shell history integration
 - Configurable via environment variables or config file
@@ -65,21 +65,13 @@ Shell-AI can be configured using environment variables or a config file.
 - `GROQ_API_KEY`: Your Groq API key
 - `OPENAI_MODEL`: The OpenAI model to use (default: `gpt-3.5-turbo`)
 - `GROQ_MODEL`: The Groq model to use (default: `llama-3.3-70b-versatile`)
-- `SHAI_API_PROVIDER`: The API provider to use (`openai`, `azure`, or `groq`, default: `groq`)
+- `SHAI_API_PROVIDER`: The API provider to use (`openai`, or `groq`, default: `groq`)
 - `SHAI_SUGGESTION_COUNT`: The number of suggestions to generate (default: `3`)
 - `SHAI_SKIP_CONFIRM`: Skip confirmation of the command to execute (default: `false`)
 - `SHAI_SKIP_HISTORY`: Skip writing selected command to shell history (default: `false`)
 - `SHAI_TEMPERATURE`: Controls randomness in the output (default: `0.05`)
 - `CTX`: Enable context mode (default: `false`)
 - `DEBUG`: Enable debug mode (default: `false`)
-
-### Azure OpenAI Configuration
-
-If using Azure OpenAI, the following environment variables are required:
-
-- `OPENAI_API_KEY`: Your Azure OpenAI API key
-- `AZURE_DEPLOYMENT_NAME`: Your Azure OpenAI deployment name
-- `AZURE_API_BASE`: Your Azure OpenAI API base URL
 
 ### Config File
 
